@@ -1,0 +1,133 @@
+package config
+
+import (
+	"fmt"
+	"strings"
+	"time"
+
+	"github.com/caarlos0/env/v11"
+	"github.com/joho/godotenv"
+)
+
+type Config struct {
+	Server  ServerConfig
+	DB      DBConfig
+	Redis   RedisConfig
+	JWT     JWTConfig
+	Stripe  StripeConfig
+	SMTP    SMTPConfig
+	Booking BookingConfig
+}
+
+type ServerConfig struct {
+	Port string `env:"SERVER_PORT" envDefault:"8080"`
+	Env  string `env:"ENV" envDefault:"development"`
+}
+
+type DBConfig struct {
+	Host     string `env:"DB_HOST,required"`
+	Port     string `env:"DB_PORT" envDefault:"5432"`
+	User     string `env:"DB_USER,required"`
+	Password string `env:"DB_PASSWORD,required"`
+	Name     string `env:"DB_NAME,required"`
+	SSLMode  string `env:"DB_SSLMODE" envDefault:"disable"`
+	MaxConns int    `env:"DB_MAX_CONNS" envDefault:"25"`
+	MinConns int    `env:"DB_MIN_CONNS" envDefault:"5"`
+
+	ConnectTimeout time.Duration `env:"DB_CONNECT_TIMEOUT" envDefault:"10s"`
+	ConnLifetime   time.Duration `env:"DB_CONN_LIFETIME" envDefault:"1h"`
+	ConnIdleTime   time.Duration `env:"DB_CONN_IDLE_TIME" envDefault:"30m"`
+}
+
+type RedisConfig struct {
+	Host     string `env:"REDIS_HOST,required"`
+	Port     string `env:"REDIS_PORT" envDefault:"6379"`
+	Password string `env:"REDIS_PASSWORD"`
+	DB       int    `env:"REDIS_DB" envDefault:"0"`
+
+	ConnectTimeout time.Duration `env:"REDIS_CONNECT_TIMEOUT" envDefault:"5s"`
+}
+
+type JWTConfig struct {
+	AccessSecret  string        `env:"JWT_ACCESS_SECRET,required"`
+	RefreshSecret string        `env:"JWT_REFRESH_SECRET,required"`
+	AccessTTL     time.Duration `env:"JWT_ACCESS_TTL" envDefault:"15m"`
+	RefreshTTL    time.Duration `env:"JWT_REFRESH_TTL" envDefault:"168h"`
+}
+
+type StripeConfig struct {
+	SecretKey     string `env:"STRIPE_SECRET_KEY,required"`
+	WebhookSecret string `env:"STRIPE_WEBHOOK_SECRET,required"`
+}
+
+type SMTPConfig struct {
+	Host     string `env:"SMTP_HOST,required"`
+	Port     int    `env:"SMTP_PORT" envDefault:"587"`
+	User     string `env:"SMTP_USER,required"`
+	Password string `env:"SMTP_PASSWORD,required"`
+}
+
+type BookingConfig struct {
+	ExpiryMinutes int `env:"BOOKING_EXPIRY_MINUTES" envDefault:"15"`
+}
+
+func Load() (*Config, error) {
+	_ = godotenv.Load() // Load .env file if it exists
+
+	cfg := &Config{}
+	if err := env.Parse(cfg); err != nil {
+		return nil, fmt.Errorf("config load failed:\n %w", err)
+	}
+
+	if err := cfg.validate(); err != nil {
+		return nil, err
+	}
+
+	return cfg, nil
+}
+
+func (c *Config) validate() error {
+	var errs []string
+	const minJWTSecretLength = 32
+
+	if len(c.JWT.AccessSecret) < minJWTSecretLength {
+		errs = append(errs, "jwt: JWT_ACCESS_SECRET must be at least 32 characters")
+	}
+	if len(c.JWT.RefreshSecret) < minJWTSecretLength {
+		errs = append(errs, "jwt: JWT_REFRESH_SECRET must be at least 32 characters")
+	}
+	if c.DB.MaxConns < c.DB.MinConns {
+		errs = append(errs, "database: DB_MAX_CONNS must be >= DB_MIN_CONNS")
+	}
+	if c.DB.ConnectTimeout <= 0 {
+		errs = append(errs, "database: DB_CONNECT_TIMEOUT must be > 0")
+	}
+	if c.DB.ConnLifetime <= 0 {
+		errs = append(errs, "database: DB_CONN_LIFETIME must be > 0")
+	}
+	if c.DB.ConnIdleTime <= 0 {
+		errs = append(errs, "database: DB_CONN_IDLE_TIME must be > 0")
+	}
+	if c.Redis.ConnectTimeout <= 0 {
+		errs = append(errs, "redis: REDIS_CONNECT_TIMEOUT must be > 0")
+	}
+	if c.Booking.ExpiryMinutes <= 0 {
+		errs = append(errs, "booking: BOOKING_EXPIRY_MINUTES must be > 0")
+	}
+
+	if len(errs) > 0 {
+		return fmt.Errorf("config validation failed:\n  - %s", strings.Join(errs, "\n  - "))
+	}
+	return nil
+}
+
+// DSN returns the Data Source Name for connecting to the database
+func (d DBConfig) DSN() string {
+	return fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
+		d.Host, d.Port, d.User, d.Password, d.Name, d.SSLMode)
+}
+
+// Addr returns the address for connecting to Redis
+func (r RedisConfig) Addr() string {
+	return fmt.Sprintf("%s:%s", r.Host, r.Port)
+}
