@@ -22,7 +22,7 @@ func NewRedisClient(ctx context.Context, cfg *config.Config) (*redis.Client, err
 	})
 
 	if err := rd.Ping(pingCtx).Err(); err != nil {
-		rd.Close()
+		_ = rd.Close()
 		return nil, fmt.Errorf("failed to connect to redis at %s: %w", cfg.Redis.Addr(), err)
 	}
 
