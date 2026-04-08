@@ -1,9 +1,9 @@
 package hash
 
 import (
+	"errors"
 	"testing"
 
-	"github.com/hogiabao7725/go-ticket-engine/pkg/apperror"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -13,7 +13,7 @@ func TestHashPassword(t *testing.T) {
 		name     string
 		password string
 		wantErr  bool
-		errCode  string
+		err      error
 	}{
 		{
 			name:     "Hash Password Successfully",
@@ -24,7 +24,7 @@ func TestHashPassword(t *testing.T) {
 			name:     "Hash Empty Password",
 			password: "",
 			wantErr:  true,
-			errCode:  apperror.ErrPasswordEmpty.Code,
+			err:      ErrPasswordEmpty,
 		},
 	}
 
@@ -34,10 +34,8 @@ func TestHashPassword(t *testing.T) {
 			if tt.wantErr {
 				assert.Error(t, err)
 
-				if appErr, ok := err.(*apperror.AppError); ok {
-					assert.Equal(t, tt.errCode, appErr.Code)
-				} else {
-					t.Errorf("expected AppError, got %T", err)
+				if tt.err != nil {
+					assert.True(t, errors.Is(err, tt.err))
 				}
 			} else {
 				assert.NoError(t, err)
@@ -60,7 +58,7 @@ func TestComparePassword(t *testing.T) {
 		hashedPass string
 		password   string
 		wantErr    bool
-		errCode    string
+		err        error
 	}{
 		{
 			name:       "Correct Password",
@@ -73,14 +71,13 @@ func TestComparePassword(t *testing.T) {
 			hashedPass: validHashed,
 			password:   "wrong",
 			wantErr:    true,
-			errCode:    apperror.ErrInvalidCredentials.Code,
+			err:        ErrInvalidCredentials,
 		},
 		{
 			name:       "Invalid Hashed Password",
 			hashedPass: "invalid-hash",
 			password:   validPass,
 			wantErr:    true,
-			errCode:    apperror.ErrComparePasswordFailed.Code,
 		},
 	}
 
@@ -90,10 +87,8 @@ func TestComparePassword(t *testing.T) {
 			if tt.wantErr {
 				assert.Error(t, err)
 
-				if appErr, ok := err.(*apperror.AppError); ok {
-					assert.Equal(t, tt.errCode, appErr.Code)
-				} else {
-					t.Errorf("expected AppError, got %T", err)
+				if tt.err != nil {
+					assert.True(t, errors.Is(err, tt.err))
 				}
 			} else {
 				assert.NoError(t, err)

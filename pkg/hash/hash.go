@@ -1,10 +1,16 @@
 package hash
 
 import (
+	"errors"
+	"fmt"
 	"strings"
 
-	"github.com/hogiabao7725/go-ticket-engine/pkg/apperror"
 	"golang.org/x/crypto/bcrypt"
+)
+
+var (
+	ErrPasswordEmpty      = errors.New("password cannot be empty")
+	ErrInvalidCredentials = errors.New("invalid email or password")
 )
 
 func HashPassword(password string) (string, error) {
@@ -16,12 +22,7 @@ func HashPassword(password string) (string, error) {
 
 	hashedByte, err := bcrypt.GenerateFromPassword([]byte(valPassword), bcrypt.DefaultCost)
 	if err != nil {
-		return "", apperror.Wrap(
-			err,
-			apperror.ErrHashFailed.Code,
-			apperror.ErrHashFailed.Message,
-			apperror.ErrHashFailed.StatusCode,
-		)
+		return "", fmt.Errorf("failed to hash password: %w", err)
 	}
 	return string(hashedByte), nil
 }
@@ -29,16 +30,10 @@ func HashPassword(password string) (string, error) {
 func ComparePassword(hashedPassword, password string) error {
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 	if err != nil {
-		if err == bcrypt.ErrMismatchedHashAndPassword {
-			return apperror.ErrInvalidCredentials
+		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
+			return ErrInvalidCredentials
 		}
-
-		return apperror.Wrap(
-			err,
-			apperror.ErrComparePasswordFailed.Code,
-			apperror.ErrComparePasswordFailed.Message,
-			apperror.ErrComparePasswordFailed.StatusCode,
-		)
+		return fmt.Errorf("failed to compare password: %w", err)
 	}
 	return nil
 }
@@ -46,7 +41,7 @@ func ComparePassword(hashedPassword, password string) error {
 func validatePassword(password string) (string, error) {
 	valPassword := strings.TrimSpace(password)
 	if valPassword == "" {
-		return "", apperror.ErrPasswordEmpty
+		return "", ErrPasswordEmpty
 	}
 	return valPassword, nil
 }

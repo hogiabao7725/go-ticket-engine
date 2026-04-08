@@ -1,12 +1,16 @@
 package jwt
 
 import (
+	"errors"
 	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
-	"github.com/hogiabao7725/go-ticket-engine/pkg/apperror"
+)
+
+var (
+	ErrInvalidTokenInput = errors.New("invalid token input parameters")
 )
 
 type AccessClaims struct {
@@ -20,15 +24,14 @@ type RefreshClaims struct {
 
 func validateTokenInput(userID, secret string, ttl time.Duration) error {
 	if strings.TrimSpace(userID) == "" {
-		return apperror.ErrInvalidTokenInput.WithMessagef("User ID is required")
+		return ErrInvalidTokenInput
 	}
 	if strings.TrimSpace(secret) == "" {
-		return apperror.ErrInvalidTokenInput.WithMessagef("Token secret cannot be empty")
+		return ErrInvalidTokenInput
 	}
 	if ttl <= 0 {
-		return apperror.ErrInvalidTokenInput.WithMessagef("Token TTL must be greater than 0")
+		return ErrInvalidTokenInput
 	}
-
 	return nil
 }
 
