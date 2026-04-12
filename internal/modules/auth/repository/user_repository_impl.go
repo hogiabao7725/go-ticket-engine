@@ -9,16 +9,15 @@ import (
 	"github.com/hogiabao7725/go-ticket-engine/internal/modules/auth/domain"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type userRepository struct {
 	queries *sqlc.Queries
 }
 
-func NewUserRepository(db *pgxpool.Pool) domain.UserRepository {
+func NewUserRepository(queriers *sqlc.Queries) domain.UserRepository {
 	return &userRepository{
-		queries: sqlc.New(db),
+		queries: queriers,
 	}
 }
 
@@ -45,14 +44,6 @@ func (r *userRepository) FindByEmail(ctx context.Context, email string) (*domain
 		return nil, fmt.Errorf("repository.FindByEmail: %w", err)
 	}
 	return toDomainUser(dbUser), nil
-}
-
-func (r *userRepository) ExistsByEmail(ctx context.Context, email string) (bool, error) {
-	exist, err := r.queries.ExistsUserByEmail(ctx, email)
-	if err != nil {
-		return false, fmt.Errorf("repository.ExistsByEmail: %w", err)
-	}
-	return exist, nil
 }
 
 // toDomainUser: sqlc.User -> domain.User

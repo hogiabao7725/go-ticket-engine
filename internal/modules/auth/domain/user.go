@@ -1,6 +1,8 @@
 package domain
 
 import (
+	"net/mail"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -18,14 +20,18 @@ type User struct {
 }
 
 func NewUser(name, email, plainPassword string) (*User, error) {
-	if name == "" {
-		return nil, ErrInvalidName
+	normalizedName, err := normalizeAndValidateName(name)
+	if err != nil {
+		return nil, err
 	}
-	if email == "" {
-		return nil, ErrInvalidEmail
+
+	normalizedEmail, err := normalizeAndValidateEmail(email)
+	if err != nil {
+		return nil, err
 	}
-	if len(plainPassword) < 6 {
-		return nil, ErrWeakPassword
+
+	if err := validatePassword(plainPassword); err != nil {
+		return nil, err
 	}
 
 	hashedPassword, err := hash.HashPassword(plainPassword)
@@ -37,13 +43,36 @@ func NewUser(name, email, plainPassword string) (*User, error) {
 
 	return &User{
 		id:        uuid.New().String(),
-		name:      name,
-		email:     email,
+		name:      normalizedName,
+		email:     normalizedEmail,
 		password:  hashedPassword,
 		role:      "user",
 		createdAt: now,
 		updatedAt: now,
 	}, nil
+}
+
+func normalizeAndValidateName(name string) (string, error) {
+	normalizedName := strings.Join(strings.Fields(name), " ")
+	if normalizedName == "" {
+		return "", ErrInvalidName
+	}
+	return normalizedName, nil
+}
+
+func normalizeAndValidateEmail(email string) (string, error) {
+	normalizedEmail := strings.ToLower(strings.TrimSpace(email))
+	if _, err := mail.ParseAddress(normalizedEmail); err != nil {
+		return "", ErrInvalidEmail
+	}
+	return normalizedEmail, nil
+}
+
+func validatePassword(plainPassword string) error {
+	if len(plainPassword) < 6 {
+		return ErrWeakPassword
+	}
+	return nil
 }
 
 func ReconstructUser(id, name, email, hashedPassword, role string, createdAt, updatedAt time.Time) *User {

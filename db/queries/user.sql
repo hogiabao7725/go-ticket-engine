@@ -5,8 +5,5 @@ VALUES ($1, $2, $3, $4, $5, $6, $7);
 -- name: GetUserByEmail :one
 SELECT id, name, email, password, role, created_at, updated_at
 FROM users
-WHERE email = $1
+WHERE lower(btrim(email)) = lower(btrim($1))
 LIMIT 1;
-
--- name: ExistsUserByEmail :one
-SELECT EXISTS (SELECT 1 FROM users WHERE email = $1);

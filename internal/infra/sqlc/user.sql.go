@@ -38,26 +38,15 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
 	return err
 }
 
-const existsUserByEmail = `-- name: ExistsUserByEmail :one
-SELECT EXISTS (SELECT 1 FROM users WHERE email = $1)
-`
-
-func (q *Queries) ExistsUserByEmail(ctx context.Context, email string) (bool, error) {
-	row := q.db.QueryRow(ctx, existsUserByEmail, email)
-	var exists bool
-	err := row.Scan(&exists)
-	return exists, err
-}
-
 const getUserByEmail = `-- name: GetUserByEmail :one
 SELECT id, name, email, password, role, created_at, updated_at
 FROM users
-WHERE email = $1
+WHERE lower(btrim(email)) = lower(btrim($1))
 LIMIT 1
 `
 
-func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
-	row := q.db.QueryRow(ctx, getUserByEmail, email)
+func (q *Queries) GetUserByEmail(ctx context.Context, btrim string) (User, error) {
+	row := q.db.QueryRow(ctx, getUserByEmail, btrim)
 	var i User
 	err := row.Scan(
 		&i.ID,

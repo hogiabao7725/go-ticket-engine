@@ -33,14 +33,6 @@ func NewRegisterUseCase(repo domain.UserRepository) *RegisterUseCase {
 }
 
 func (uc *RegisterUseCase) Execute(ctx context.Context, req RegisterRequest) (*RegisterResponse, error) {
-	exists, err := uc.repo.ExistsByEmail(ctx, req.Email)
-	if err != nil {
-		return nil, fmt.Errorf("check email existence failed: %w", err)
-	}
-	if exists {
-		return nil, domain.ErrUserAlreadyExists
-	}
-
 	user, err := domain.NewUser(req.Name, req.Email, req.Password)
 	if err != nil {
 		return nil, err
