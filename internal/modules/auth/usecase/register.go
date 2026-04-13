@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -38,8 +39,12 @@ func (uc *RegisterUseCase) Execute(ctx context.Context, req RegisterRequest) (*R
 		return nil, err
 	}
 
-	if err := uc.repo.Create(ctx, user); err != nil {
-		return nil, fmt.Errorf("create user failed: %w", err)
+	err = uc.repo.Create(ctx, user)
+	if err != nil {
+		if errors.Is(err, domain.ErrUserAlreadyExists) {
+			return nil, domain.ErrUserAlreadyExists
+		}
+		return nil, fmt.Errorf("usecase.Register: %w", err)
 	}
 
 	return &RegisterResponse{
