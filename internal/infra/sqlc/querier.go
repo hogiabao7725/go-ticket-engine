@@ -6,19 +6,15 @@ package sqlc
 
 import (
 	"context"
-
-	"github.com/google/uuid"
 )
 
 type Querier interface {
 	// REFRESH TOKENS
 	CreateRefreshToken(ctx context.Context, arg CreateRefreshTokenParams) error
-	CreateUser(ctx context.Context, arg CreateUserParams) (CreateUserRow, error)
-	DeleteRefreshTokensByUserID(ctx context.Context, userID uuid.UUID) error
+	CreateUser(ctx context.Context, arg CreateUserParams) error
+	DeleteRefreshTokensByUserID(ctx context.Context, userID string) error
 	GetRefreshTokenByHash(ctx context.Context, tokenHash string) (GetRefreshTokenByHashRow, error)
-	GetUserByEmail(ctx context.Context, email string) (GetUserByEmailRow, error)
-	GetUserByID(ctx context.Context, id uuid.UUID) (GetUserByIDRow, error)
-	UpdateUserRole(ctx context.Context, arg UpdateUserRoleParams) (int64, error)
+	GetUserByEmail(ctx context.Context, btrim string) (User, error)
 }
 
 var _ Querier = (*Queries)(nil)

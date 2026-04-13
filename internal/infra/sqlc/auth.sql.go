@@ -7,9 +7,7 @@ package sqlc
 
 import (
 	"context"
-
-	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgtype"
+	"time"
 )
 
 const createRefreshToken = `-- name: CreateRefreshToken :exec
@@ -19,9 +17,9 @@ VALUES ($1, $2, $3)
 `
 
 type CreateRefreshTokenParams struct {
-	UserID    uuid.UUID          `json:"user_id"`
-	TokenHash string             `json:"token_hash"`
-	ExpiresAt pgtype.Timestamptz `json:"expires_at"`
+	UserID    string    `json:"user_id"`
+	TokenHash string    `json:"token_hash"`
+	ExpiresAt time.Time `json:"expires_at"`
 }
 
 // REFRESH TOKENS
@@ -35,7 +33,7 @@ DELETE FROM refresh_tokens
 WHERE user_id = $1
 `
 
-func (q *Queries) DeleteRefreshTokensByUserID(ctx context.Context, userID uuid.UUID) error {
+func (q *Queries) DeleteRefreshTokensByUserID(ctx context.Context, userID string) error {
 	_, err := q.db.Exec(ctx, deleteRefreshTokensByUserID, userID)
 	return err
 }
@@ -47,9 +45,9 @@ WHERE token_hash = $1
 `
 
 type GetRefreshTokenByHashRow struct {
-	ID        uuid.UUID          `json:"id"`
-	UserID    uuid.UUID          `json:"user_id"`
-	ExpiresAt pgtype.Timestamptz `json:"expires_at"`
+	ID        string    `json:"id"`
+	UserID    string    `json:"user_id"`
+	ExpiresAt time.Time `json:"expires_at"`
 }
 
 func (q *Queries) GetRefreshTokenByHash(ctx context.Context, tokenHash string) (GetRefreshTokenByHashRow, error) {

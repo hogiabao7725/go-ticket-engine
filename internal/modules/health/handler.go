@@ -2,7 +2,6 @@ package health
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hogiabao7725/go-ticket-engine/internal/response"
 )
 
 type HealthHandler struct{}
@@ -20,5 +19,5 @@ func (h *HealthHandler) Healthz(c *gin.Context) {
 		"status":  "ok",
 		"message": "Ticket Engine is healthy",
 	}
-	response.OK(c, data)
+	c.JSON(200, data)
 }

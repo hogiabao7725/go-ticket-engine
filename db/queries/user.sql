@@ -1,19 +1,9 @@
--- name: CreateUser :one
-INSERT INTO users (name, email, password, role)
-VALUES ($1, $2, $3, $4)
-RETURNING id, name, email, role, created_at;
+-- name: CreateUser :exec
+INSERT INTO users (id, name, email, password, role, created_at, updated_at)
+VALUES ($1, $2, $3, $4, $5, $6, $7);
 
 -- name: GetUserByEmail :one
-SELECT id, name, email, password, role, created_at
+SELECT id, name, email, password, role, created_at, updated_at
 FROM users
-WHERE email = $1;
-
--- name: GetUserByID :one
-SELECT id, name, email, role, created_at
-FROM users
-WHERE id = $1;
-
--- name: UpdateUserRole :execrows
-UPDATE users
-SET role = $2, updated_at = NOW()
-WHERE id = $1;
+WHERE lower(btrim(email)) = lower(btrim($1))
+LIMIT 1;

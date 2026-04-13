@@ -7,8 +7,8 @@ package sqlc
 import (
 	"database/sql/driver"
 	"fmt"
+	"time"
 
-	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
@@ -186,71 +186,71 @@ func (ns NullUserRole) Value() (driver.Value, error) {
 }
 
 type Booking struct {
-	ID           uuid.UUID          `json:"id"`
-	UserID       uuid.UUID          `json:"user_id"`
-	TicketTypeID uuid.UUID          `json:"ticket_type_id"`
-	Quantity     int32              `json:"quantity"`
-	TotalAmount  int64              `json:"total_amount"`
-	Status       BookingStatus      `json:"status"`
-	ExpiresAt    pgtype.Timestamptz `json:"expires_at"`
-	CreatedAt    pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt    pgtype.Timestamptz `json:"updated_at"`
+	ID           string        `json:"id"`
+	UserID       string        `json:"user_id"`
+	TicketTypeID string        `json:"ticket_type_id"`
+	Quantity     int32         `json:"quantity"`
+	TotalAmount  int64         `json:"total_amount"`
+	Status       BookingStatus `json:"status"`
+	ExpiresAt    time.Time     `json:"expires_at"`
+	CreatedAt    time.Time     `json:"created_at"`
+	UpdatedAt    time.Time     `json:"updated_at"`
 }
 
 type Event struct {
-	ID          uuid.UUID          `json:"id"`
-	OrganizerID uuid.UUID          `json:"organizer_id"`
-	Title       string             `json:"title"`
-	Description pgtype.Text        `json:"description"`
-	City        string             `json:"city"`
-	Venue       string             `json:"venue"`
-	BannerUrl   pgtype.Text        `json:"banner_url"`
-	StartDate   pgtype.Timestamptz `json:"start_date"`
-	EndDate     pgtype.Timestamptz `json:"end_date"`
-	Status      EventStatus        `json:"status"`
-	CreatedAt   pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
+	ID          string      `json:"id"`
+	OrganizerID string      `json:"organizer_id"`
+	Title       string      `json:"title"`
+	Description pgtype.Text `json:"description"`
+	City        string      `json:"city"`
+	Venue       string      `json:"venue"`
+	BannerUrl   pgtype.Text `json:"banner_url"`
+	StartDate   time.Time   `json:"start_date"`
+	EndDate     time.Time   `json:"end_date"`
+	Status      EventStatus `json:"status"`
+	CreatedAt   time.Time   `json:"created_at"`
+	UpdatedAt   time.Time   `json:"updated_at"`
 }
 
 type Payment struct {
-	ID              uuid.UUID          `json:"id"`
+	ID              string             `json:"id"`
 	BookingID       pgtype.UUID        `json:"booking_id"`
 	StripePaymentID string             `json:"stripe_payment_id"`
 	Amount          int64              `json:"amount"`
 	Currency        string             `json:"currency"`
 	Status          PaymentStatus      `json:"status"`
 	PaidAt          pgtype.Timestamptz `json:"paid_at"`
-	CreatedAt       pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt       pgtype.Timestamptz `json:"updated_at"`
+	CreatedAt       time.Time          `json:"created_at"`
+	UpdatedAt       time.Time          `json:"updated_at"`
 }
 
 type RefreshToken struct {
-	ID        uuid.UUID          `json:"id"`
-	UserID    uuid.UUID          `json:"user_id"`
-	TokenHash string             `json:"token_hash"`
-	ExpiresAt pgtype.Timestamptz `json:"expires_at"`
-	CreatedAt pgtype.Timestamptz `json:"created_at"`
+	ID        string    `json:"id"`
+	UserID    string    `json:"user_id"`
+	TokenHash string    `json:"token_hash"`
+	ExpiresAt time.Time `json:"expires_at"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type TicketType struct {
-	ID            uuid.UUID          `json:"id"`
-	EventID       uuid.UUID          `json:"event_id"`
-	Name          string             `json:"name"`
-	Description   pgtype.Text        `json:"description"`
-	Price         int64              `json:"price"`
-	Quantity      int32              `json:"quantity"`
-	Sold          int32              `json:"sold"`
-	MaxPerBooking int32              `json:"max_per_booking"`
-	CreatedAt     pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt     pgtype.Timestamptz `json:"updated_at"`
+	ID            string      `json:"id"`
+	EventID       string      `json:"event_id"`
+	Name          string      `json:"name"`
+	Description   pgtype.Text `json:"description"`
+	Price         int64       `json:"price"`
+	Quantity      int32       `json:"quantity"`
+	Sold          int32       `json:"sold"`
+	MaxPerBooking int32       `json:"max_per_booking"`
+	CreatedAt     time.Time   `json:"created_at"`
+	UpdatedAt     time.Time   `json:"updated_at"`
 }
 
 type User struct {
-	ID        uuid.UUID          `json:"id"`
-	Name      string             `json:"name"`
-	Email     string             `json:"email"`
-	Password  string             `json:"password"`
-	Role      UserRole           `json:"role"`
-	CreatedAt pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
+	ID        string    `json:"id"`
+	Name      string    `json:"name"`
+	Email     string    `json:"email"`
+	Password  string    `json:"password"`
+	Role      string    `json:"role"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }

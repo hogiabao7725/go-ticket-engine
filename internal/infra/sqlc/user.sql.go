@@ -7,68 +7,47 @@ package sqlc
 
 import (
 	"context"
-
-	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgtype"
+	"time"
 )
 
-const createUser = `-- name: CreateUser :one
-INSERT INTO users (name, email, password, role)
-VALUES ($1, $2, $3, $4)
-RETURNING id, name, email, role, created_at
+const createUser = `-- name: CreateUser :exec
+INSERT INTO users (id, name, email, password, role, created_at, updated_at)
+VALUES ($1, $2, $3, $4, $5, $6, $7)
 `
 
 type CreateUserParams struct {
-	Name     string   `json:"name"`
-	Email    string   `json:"email"`
-	Password string   `json:"password"`
-	Role     UserRole `json:"role"`
+	ID        string    `json:"id"`
+	Name      string    `json:"name"`
+	Email     string    `json:"email"`
+	Password  string    `json:"password"`
+	Role      string    `json:"role"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
-type CreateUserRow struct {
-	ID        uuid.UUID          `json:"id"`
-	Name      string             `json:"name"`
-	Email     string             `json:"email"`
-	Role      UserRole           `json:"role"`
-	CreatedAt pgtype.Timestamptz `json:"created_at"`
-}
-
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (CreateUserRow, error) {
-	row := q.db.QueryRow(ctx, createUser,
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
+	_, err := q.db.Exec(ctx, createUser,
+		arg.ID,
 		arg.Name,
 		arg.Email,
 		arg.Password,
 		arg.Role,
+		arg.CreatedAt,
+		arg.UpdatedAt,
 	)
-	var i CreateUserRow
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.Email,
-		&i.Role,
-		&i.CreatedAt,
-	)
-	return i, err
+	return err
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, name, email, password, role, created_at
+SELECT id, name, email, password, role, created_at, updated_at
 FROM users
-WHERE email = $1
+WHERE lower(btrim(email)) = lower(btrim($1))
+LIMIT 1
 `
 
-type GetUserByEmailRow struct {
-	ID        uuid.UUID          `json:"id"`
-	Name      string             `json:"name"`
-	Email     string             `json:"email"`
-	Password  string             `json:"password"`
-	Role      UserRole           `json:"role"`
-	CreatedAt pgtype.Timestamptz `json:"created_at"`
-}
-
-func (q *Queries) GetUserByEmail(ctx context.Context, email string) (GetUserByEmailRow, error) {
-	row := q.db.QueryRow(ctx, getUserByEmail, email)
-	var i GetUserByEmailRow
+func (q *Queries) GetUserByEmail(ctx context.Context, btrim string) (User, error) {
+	row := q.db.QueryRow(ctx, getUserByEmail, btrim)
+	var i User
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
@@ -76,52 +55,7 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (GetUserByEm
 		&i.Password,
 		&i.Role,
 		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
-}
-
-const getUserByID = `-- name: GetUserByID :one
-SELECT id, name, email, role, created_at
-FROM users
-WHERE id = $1
-`
-
-type GetUserByIDRow struct {
-	ID        uuid.UUID          `json:"id"`
-	Name      string             `json:"name"`
-	Email     string             `json:"email"`
-	Role      UserRole           `json:"role"`
-	CreatedAt pgtype.Timestamptz `json:"created_at"`
-}
-
-func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (GetUserByIDRow, error) {
-	row := q.db.QueryRow(ctx, getUserByID, id)
-	var i GetUserByIDRow
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.Email,
-		&i.Role,
-		&i.CreatedAt,
-	)
-	return i, err
-}
-
-const updateUserRole = `-- name: UpdateUserRole :execrows
-UPDATE users
-SET role = $2, updated_at = NOW()
-WHERE id = $1
-`
-
-type UpdateUserRoleParams struct {
-	ID   uuid.UUID `json:"id"`
-	Role UserRole  `json:"role"`
-}
-
-func (q *Queries) UpdateUserRole(ctx context.Context, arg UpdateUserRoleParams) (int64, error) {
-	result, err := q.db.Exec(ctx, updateUserRole, arg.ID, arg.Role)
-	if err != nil {
-		return 0, err
-	}
-	return result.RowsAffected(), nil
 }
