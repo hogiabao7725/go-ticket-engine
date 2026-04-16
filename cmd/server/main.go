@@ -12,10 +12,7 @@ import (
 	"github.com/hogiabao7725/go-ticket-engine/internal/core/config"
 	"github.com/hogiabao7725/go-ticket-engine/internal/core/database"
 	"github.com/hogiabao7725/go-ticket-engine/internal/core/middleware"
-	"github.com/hogiabao7725/go-ticket-engine/internal/infra/sqlc"
-	authDelivery "github.com/hogiabao7725/go-ticket-engine/internal/modules/auth/delivery/http"
-	authRepository "github.com/hogiabao7725/go-ticket-engine/internal/modules/auth/repository"
-	authUsecase "github.com/hogiabao7725/go-ticket-engine/internal/modules/auth/usecase"
+	"github.com/hogiabao7725/go-ticket-engine/internal/modules/auth"
 	"github.com/hogiabao7725/go-ticket-engine/internal/modules/health"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/redis/go-redis/v9"
@@ -94,11 +91,7 @@ func registerRoutes(r *gin.Engine, dbPool *pgxpool.Pool) {
 	health.NewHealthHandler().RegisterRoutes(v1)
 
 	// Auth module
-	queries := sqlc.New(dbPool)
-	userRepo := authRepository.NewUserRepository(queries)
-	registerUC := authUsecase.NewRegisterUseCase(userRepo)
-	authHandler := authDelivery.NewAuthHandler(registerUC)
-	authHandler.RegisterRoutes(v1)
+	auth.RegisterRoutes(v1, dbPool)
 
 	// Log all registered routes
 	for _, route := range r.Routes() {
