@@ -32,7 +32,7 @@ func main() {
 	defer rd.Close()
 
 	router := setupRouter()
-	registerRoutes(router, pgPool)
+	registerRoutes(router, pgPool, cfg)
 	startServer(router, cfg)
 }
 
@@ -84,14 +84,14 @@ func setupRouter() *gin.Engine {
 	return r
 }
 
-func registerRoutes(r *gin.Engine, dbPool *pgxpool.Pool) {
+func registerRoutes(r *gin.Engine, dbPool *pgxpool.Pool, cfg *config.Config) {
 	v1 := r.Group("/api/v1")
 
 	// Health check
 	health.NewHealthHandler().RegisterRoutes(v1)
 
 	// Auth module
-	auth.RegisterRoutes(v1, dbPool)
+	auth.RegisterRoutes(v1, dbPool, cfg.JWT)
 
 	// Log all registered routes
 	for _, route := range r.Routes() {
