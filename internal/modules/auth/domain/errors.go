@@ -22,4 +22,8 @@ var (
 
 	// User
 	ErrUserAlreadyExists = errors.New("user with this email already exists")
+	ErrUserNotFound      = errors.New("user not found")
+
+	// Authentication
+	ErrInvalidCredentials = errors.New("invalid email or password")
 )
