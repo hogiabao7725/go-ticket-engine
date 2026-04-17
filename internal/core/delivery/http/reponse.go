@@ -38,3 +38,24 @@ func ValidationError(c *gin.Context, fields map[string]string) {
 		Fields:  fields,
 	})
 }
+
+func Unauthorized(c *gin.Context, message string) {
+	if message == "" {
+		message = "unauthorized"
+	}
+	Error(c, http.StatusUnauthorized, message)
+}
+
+func Forbidden(c *gin.Context, message string) {
+	if message == "" {
+		message = "forbidden"
+	}
+	Error(c, http.StatusForbidden, message)
+}
+
+func NotFound(c *gin.Context, message string) {
+	if message == "" {
+		message = "resource not found"
+	}
+	Error(c, http.StatusNotFound, message)
+}
