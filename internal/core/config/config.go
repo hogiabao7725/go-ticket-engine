@@ -10,13 +10,10 @@ import (
 )
 
 type Config struct {
-	Server  ServerConfig
-	DB      DBConfig
-	Redis   RedisConfig
-	JWT     JWTConfig
-	Stripe  StripeConfig
-	SMTP    SMTPConfig
-	Booking BookingConfig
+	Server ServerConfig
+	DB     DBConfig
+	Redis  RedisConfig
+	JWT    JWTConfig
 }
 
 type ServerConfig struct {
@@ -53,22 +50,6 @@ type JWTConfig struct {
 	RefreshSecret string        `env:"JWT_REFRESH_SECRET,required"`
 	AccessTTL     time.Duration `env:"JWT_ACCESS_TTL" envDefault:"15m"`
 	RefreshTTL    time.Duration `env:"JWT_REFRESH_TTL" envDefault:"168h"`
-}
-
-type StripeConfig struct {
-	SecretKey     string `env:"STRIPE_SECRET_KEY,required"`
-	WebhookSecret string `env:"STRIPE_WEBHOOK_SECRET,required"`
-}
-
-type SMTPConfig struct {
-	Host     string `env:"SMTP_HOST,required"`
-	Port     int    `env:"SMTP_PORT" envDefault:"587"`
-	User     string `env:"SMTP_USER,required"`
-	Password string `env:"SMTP_PASSWORD,required"`
-}
-
-type BookingConfig struct {
-	ExpiryMinutes int `env:"BOOKING_EXPIRY_MINUTES" envDefault:"15"`
 }
 
 func Load() (*Config, error) {
@@ -110,9 +91,6 @@ func (c *Config) validate() error {
 	}
 	if c.Redis.ConnectTimeout <= 0 {
 		errs = append(errs, "redis: REDIS_CONNECT_TIMEOUT must be > 0")
-	}
-	if c.Booking.ExpiryMinutes <= 0 {
-		errs = append(errs, "booking: BOOKING_EXPIRY_MINUTES must be > 0")
 	}
 
 	if len(errs) > 0 {

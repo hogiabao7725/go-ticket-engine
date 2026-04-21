@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	coreHttp "github.com/hogiabao7725/go-ticket-engine/internal/core/delivery/http"
-	"github.com/hogiabao7725/go-ticket-engine/internal/infra/token"
+	coreHttp "github.com/hogiabao7725/gin-auth-playground/internal/core/delivery/http"
+	"github.com/hogiabao7725/gin-auth-playground/internal/infra/token"
 )
 
 type contextKey string
@@ -82,7 +82,7 @@ func GetRole(ctx context.Context) string {
 func RequireRole(allowedRoles ...string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		role := GetRole(c.Request.Context())
-		
+
 		for _, r := range allowedRoles {
 			if role == r {
 				c.Next()

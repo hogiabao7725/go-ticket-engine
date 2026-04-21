@@ -2,14 +2,14 @@ package auth
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hogiabao7725/go-ticket-engine/internal/core/config"
-	"github.com/hogiabao7725/go-ticket-engine/internal/core/middleware"
-	"github.com/hogiabao7725/go-ticket-engine/internal/infra/sqlc"
-	infraToken "github.com/hogiabao7725/go-ticket-engine/internal/infra/token"
-	"github.com/hogiabao7725/go-ticket-engine/internal/modules/auth/features/login"
-	get_me "github.com/hogiabao7725/go-ticket-engine/internal/modules/auth/features/me"
-	"github.com/hogiabao7725/go-ticket-engine/internal/modules/auth/features/register"
-	"github.com/hogiabao7725/go-ticket-engine/internal/modules/auth/infra"
+	"github.com/hogiabao7725/gin-auth-playground/internal/core/config"
+	"github.com/hogiabao7725/gin-auth-playground/internal/core/middleware"
+	"github.com/hogiabao7725/gin-auth-playground/internal/infra/sqlc"
+	infraToken "github.com/hogiabao7725/gin-auth-playground/internal/infra/token"
+	"github.com/hogiabao7725/gin-auth-playground/internal/modules/auth/features/login"
+	get_me "github.com/hogiabao7725/gin-auth-playground/internal/modules/auth/features/me"
+	"github.com/hogiabao7725/gin-auth-playground/internal/modules/auth/features/register"
+	"github.com/hogiabao7725/gin-auth-playground/internal/modules/auth/infra"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 

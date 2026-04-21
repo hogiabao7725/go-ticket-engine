@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/hogiabao7725/go-ticket-engine/internal/modules/auth/domain"
-	"github.com/hogiabao7725/go-ticket-engine/internal/modules/auth/domain/uservo"
+	"github.com/hogiabao7725/gin-auth-playground/internal/modules/auth/domain"
+	"github.com/hogiabao7725/gin-auth-playground/internal/modules/auth/domain/uservo"
 )
 
 type Result struct {

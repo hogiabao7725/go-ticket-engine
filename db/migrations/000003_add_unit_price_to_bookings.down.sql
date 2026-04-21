@@ -1,1 +1,0 @@
-ALTER TABLE bookings DROP COLUMN IF EXISTS unit_price;

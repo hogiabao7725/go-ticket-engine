@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/hogiabao7725/go-ticket-engine/internal/modules/auth/domain"
+	"github.com/hogiabao7725/gin-auth-playground/internal/modules/auth/domain"
 )
 
 func MapDomainErrorToHTTP(err error) (int, string) {

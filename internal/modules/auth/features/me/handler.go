@@ -3,7 +3,7 @@ package get_me
 import (
 	"context"
 
-	"github.com/hogiabao7725/go-ticket-engine/internal/modules/auth/domain"
+	"github.com/hogiabao7725/gin-auth-playground/internal/modules/auth/domain"
 )
 
 type UserDTO struct {

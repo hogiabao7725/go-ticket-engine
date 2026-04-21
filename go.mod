@@ -1,4 +1,4 @@
-module github.com/hogiabao7725/go-ticket-engine
+module github.com/hogiabao7725/gin-auth-playground
 
 go 1.26.1
 

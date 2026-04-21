@@ -3,8 +3,8 @@ package infra
 import (
 	"fmt"
 
-	infraToken "github.com/hogiabao7725/go-ticket-engine/internal/infra/token"
-	"github.com/hogiabao7725/go-ticket-engine/internal/modules/auth/domain"
+	infraToken "github.com/hogiabao7725/gin-auth-playground/internal/infra/token"
+	"github.com/hogiabao7725/gin-auth-playground/internal/modules/auth/domain"
 )
 
 type JWTTokenGenerator struct {

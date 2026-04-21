@@ -1,9 +1,9 @@
 package infra
 
 import (
-	"github.com/hogiabao7725/go-ticket-engine/internal/infra/sqlc"
-	"github.com/hogiabao7725/go-ticket-engine/internal/modules/auth/domain"
-	"github.com/hogiabao7725/go-ticket-engine/internal/modules/auth/domain/uservo"
+	"github.com/hogiabao7725/gin-auth-playground/internal/infra/sqlc"
+	"github.com/hogiabao7725/gin-auth-playground/internal/modules/auth/domain"
+	"github.com/hogiabao7725/gin-auth-playground/internal/modules/auth/domain/uservo"
 )
 
 // toDomainUser: sqlc.User -> domain.User

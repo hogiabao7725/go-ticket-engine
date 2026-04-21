@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/hogiabao7725/go-ticket-engine/internal/core/config"
+	"github.com/hogiabao7725/gin-auth-playground/internal/core/config"
 	"github.com/redis/go-redis/v9"
 )
 

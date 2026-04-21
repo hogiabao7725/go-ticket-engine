@@ -3,7 +3,7 @@ package domain
 import (
 	"errors"
 
-	"github.com/hogiabao7725/go-ticket-engine/internal/modules/auth/domain/uservo"
+	"github.com/hogiabao7725/gin-auth-playground/internal/modules/auth/domain/uservo"
 )
 
 var (

@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/hogiabao7725/go-ticket-engine/internal/infra/sqlc"
-	"github.com/hogiabao7725/go-ticket-engine/internal/modules/auth/domain"
+	"github.com/hogiabao7725/gin-auth-playground/internal/infra/sqlc"
+	"github.com/hogiabao7725/gin-auth-playground/internal/modules/auth/domain"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 )

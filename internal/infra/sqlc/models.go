@@ -8,139 +8,7 @@ import (
 	"database/sql/driver"
 	"fmt"
 	"time"
-
-	"github.com/jackc/pgx/v5/pgtype"
 )
-
-type BookingStatus string
-
-const (
-	BookingStatusPending   BookingStatus = "pending"
-	BookingStatusPaid      BookingStatus = "paid"
-	BookingStatusCancelled BookingStatus = "cancelled"
-	BookingStatusExpired   BookingStatus = "expired"
-)
-
-func (e *BookingStatus) Scan(src interface{}) error {
-	switch s := src.(type) {
-	case []byte:
-		*e = BookingStatus(s)
-	case string:
-		*e = BookingStatus(s)
-	default:
-		return fmt.Errorf("unsupported scan type for BookingStatus: %T", src)
-	}
-	return nil
-}
-
-type NullBookingStatus struct {
-	BookingStatus BookingStatus `json:"booking_status"`
-	Valid         bool          `json:"valid"` // Valid is true if BookingStatus is not NULL
-}
-
-// Scan implements the Scanner interface.
-func (ns *NullBookingStatus) Scan(value interface{}) error {
-	if value == nil {
-		ns.BookingStatus, ns.Valid = "", false
-		return nil
-	}
-	ns.Valid = true
-	return ns.BookingStatus.Scan(value)
-}
-
-// Value implements the driver Valuer interface.
-func (ns NullBookingStatus) Value() (driver.Value, error) {
-	if !ns.Valid {
-		return nil, nil
-	}
-	return string(ns.BookingStatus), nil
-}
-
-type EventStatus string
-
-const (
-	EventStatusOnSale    EventStatus = "on_sale"
-	EventStatusCancelled EventStatus = "cancelled"
-	EventStatusEnded     EventStatus = "ended"
-)
-
-func (e *EventStatus) Scan(src interface{}) error {
-	switch s := src.(type) {
-	case []byte:
-		*e = EventStatus(s)
-	case string:
-		*e = EventStatus(s)
-	default:
-		return fmt.Errorf("unsupported scan type for EventStatus: %T", src)
-	}
-	return nil
-}
-
-type NullEventStatus struct {
-	EventStatus EventStatus `json:"event_status"`
-	Valid       bool        `json:"valid"` // Valid is true if EventStatus is not NULL
-}
-
-// Scan implements the Scanner interface.
-func (ns *NullEventStatus) Scan(value interface{}) error {
-	if value == nil {
-		ns.EventStatus, ns.Valid = "", false
-		return nil
-	}
-	ns.Valid = true
-	return ns.EventStatus.Scan(value)
-}
-
-// Value implements the driver Valuer interface.
-func (ns NullEventStatus) Value() (driver.Value, error) {
-	if !ns.Valid {
-		return nil, nil
-	}
-	return string(ns.EventStatus), nil
-}
-
-type PaymentStatus string
-
-const (
-	PaymentStatusPending   PaymentStatus = "pending"
-	PaymentStatusSucceeded PaymentStatus = "succeeded"
-	PaymentStatusFailed    PaymentStatus = "failed"
-)
-
-func (e *PaymentStatus) Scan(src interface{}) error {
-	switch s := src.(type) {
-	case []byte:
-		*e = PaymentStatus(s)
-	case string:
-		*e = PaymentStatus(s)
-	default:
-		return fmt.Errorf("unsupported scan type for PaymentStatus: %T", src)
-	}
-	return nil
-}
-
-type NullPaymentStatus struct {
-	PaymentStatus PaymentStatus `json:"payment_status"`
-	Valid         bool          `json:"valid"` // Valid is true if PaymentStatus is not NULL
-}
-
-// Scan implements the Scanner interface.
-func (ns *NullPaymentStatus) Scan(value interface{}) error {
-	if value == nil {
-		ns.PaymentStatus, ns.Valid = "", false
-		return nil
-	}
-	ns.Valid = true
-	return ns.PaymentStatus.Scan(value)
-}
-
-// Value implements the driver Valuer interface.
-func (ns NullPaymentStatus) Value() (driver.Value, error) {
-	if !ns.Valid {
-		return nil, nil
-	}
-	return string(ns.PaymentStatus), nil
-}
 
 type UserRole string
 
@@ -185,64 +53,12 @@ func (ns NullUserRole) Value() (driver.Value, error) {
 	return string(ns.UserRole), nil
 }
 
-type Booking struct {
-	ID           string        `json:"id"`
-	UserID       string        `json:"user_id"`
-	TicketTypeID string        `json:"ticket_type_id"`
-	Quantity     int32         `json:"quantity"`
-	TotalAmount  int64         `json:"total_amount"`
-	Status       BookingStatus `json:"status"`
-	ExpiresAt    time.Time     `json:"expires_at"`
-	CreatedAt    time.Time     `json:"created_at"`
-	UpdatedAt    time.Time     `json:"updated_at"`
-}
-
-type Event struct {
-	ID          string      `json:"id"`
-	OrganizerID string      `json:"organizer_id"`
-	Title       string      `json:"title"`
-	Description pgtype.Text `json:"description"`
-	City        string      `json:"city"`
-	Venue       string      `json:"venue"`
-	BannerUrl   pgtype.Text `json:"banner_url"`
-	StartDate   time.Time   `json:"start_date"`
-	EndDate     time.Time   `json:"end_date"`
-	Status      EventStatus `json:"status"`
-	CreatedAt   time.Time   `json:"created_at"`
-	UpdatedAt   time.Time   `json:"updated_at"`
-}
-
-type Payment struct {
-	ID              string             `json:"id"`
-	BookingID       pgtype.UUID        `json:"booking_id"`
-	StripePaymentID string             `json:"stripe_payment_id"`
-	Amount          int64              `json:"amount"`
-	Currency        string             `json:"currency"`
-	Status          PaymentStatus      `json:"status"`
-	PaidAt          pgtype.Timestamptz `json:"paid_at"`
-	CreatedAt       time.Time          `json:"created_at"`
-	UpdatedAt       time.Time          `json:"updated_at"`
-}
-
 type RefreshToken struct {
 	ID        string    `json:"id"`
 	UserID    string    `json:"user_id"`
 	TokenHash string    `json:"token_hash"`
 	ExpiresAt time.Time `json:"expires_at"`
 	CreatedAt time.Time `json:"created_at"`
-}
-
-type TicketType struct {
-	ID            string      `json:"id"`
-	EventID       string      `json:"event_id"`
-	Name          string      `json:"name"`
-	Description   pgtype.Text `json:"description"`
-	Price         int64       `json:"price"`
-	Quantity      int32       `json:"quantity"`
-	Sold          int32       `json:"sold"`
-	MaxPerBooking int32       `json:"max_per_booking"`
-	CreatedAt     time.Time   `json:"created_at"`
-	UpdatedAt     time.Time   `json:"updated_at"`
 }
 
 type User struct {

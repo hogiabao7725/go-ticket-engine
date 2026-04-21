@@ -1,8 +1,8 @@
 package infra
 
 import (
-	"github.com/hogiabao7725/go-ticket-engine/internal/infra/identifier"
-	"github.com/hogiabao7725/go-ticket-engine/internal/modules/auth/domain"
+	"github.com/hogiabao7725/gin-auth-playground/internal/infra/identifier"
+	"github.com/hogiabao7725/gin-auth-playground/internal/modules/auth/domain"
 )
 
 type UUIDGenerator struct {
