@@ -892,29 +892,4 @@ When validation fails, the `fields` object contains specific error messages:
 | `must be at least X characters long` | `password` | Password too short |
 | `user with this email already exists` | `email` | Email already registered |
 
----
-
-## Contributing
-
-This project is a demonstration of Clean Architecture and DDD principles in Go. For contributions:
-
-1. Follow the existing project structure
-2. Maintain separation of concerns (Delivery, Domain, Infrastructure)
-3. Write tests for new features
-4. Use meaningful commit messages
-
----
-
-## License
-
-[Add appropriate license here]
-
----
-
-## Contact & Support
-
-For questions or issues, please contact the project maintainer at [contact information]
-
----
-
 **Last Updated:** April 2026
