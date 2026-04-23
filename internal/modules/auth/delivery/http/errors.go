@@ -21,7 +21,11 @@ func MapDomainErrorToHTTP(err error) (int, string) {
 	case errors.Is(err, domain.ErrUserAlreadyExists):
 		return http.StatusConflict, err.Error()
 
-	case errors.Is(err, domain.ErrInvalidCredentials):
+	case errors.Is(err, domain.ErrInvalidCredentials),
+		errors.Is(err, domain.ErrInvalidToken),
+		errors.Is(err, domain.ErrTokenExpired),
+		errors.Is(err, domain.ErrTokenRevoked),
+		errors.Is(err, domain.ErrMissingToken):
 		return http.StatusUnauthorized, err.Error()
 
 	case errors.Is(err, domain.ErrUserNotFound):

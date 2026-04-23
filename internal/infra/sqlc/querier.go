@@ -12,8 +12,9 @@ type Querier interface {
 	// REFRESH TOKENS
 	CreateRefreshToken(ctx context.Context, arg CreateRefreshTokenParams) error
 	CreateUser(ctx context.Context, arg CreateUserParams) error
+	DeleteRefreshTokenByTokenHash(ctx context.Context, tokenHash string) error
 	DeleteRefreshTokensByUserID(ctx context.Context, userID string) error
-	GetRefreshTokenByHash(ctx context.Context, tokenHash string) (GetRefreshTokenByHashRow, error)
+	GetRefreshTokenByHash(ctx context.Context, tokenHash string) (RefreshToken, error)
 	GetUserByEmail(ctx context.Context, btrim string) (User, error)
 	GetUserByID(ctx context.Context, id string) (User, error)
 }

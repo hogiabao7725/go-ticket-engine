@@ -16,6 +16,12 @@ var (
 
 	// Authentication
 	ErrInvalidCredentials = errors.New("invalid email or password")
+
+	// Tokens & Session
+	ErrInvalidToken = errors.New("invalid refresh token")
+	ErrTokenExpired = errors.New("refresh token has expired")
+	ErrTokenRevoked = errors.New("refresh token has been revoked")
+	ErrMissingToken = errors.New("refresh token is missing")
 )
 
 // Validation errors (Aliased from VO)

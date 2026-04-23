@@ -18,5 +18,10 @@ type TokenResult struct {
 
 type TokenGenerator interface {
 	GenerateAccessToken(userID, role string) (TokenResult, error)
-	GenerateRefreshToken(userID string) (string, error)
+	GenerateRefreshToken(userID string) (TokenResult, error)
+}
+
+type TokenHasher interface {
+	Hash(token string) (string, error)
+	Compare(hash, token string) error
 }

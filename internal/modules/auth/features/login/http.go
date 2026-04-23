@@ -44,7 +44,7 @@ func (h *HTTPHandler) Login(c *gin.Context) {
 		Password: req.Password,
 	}
 
-	result, err := h.loginHandler.Execute(c.Request.Context(), cmd)
+	result, refreshTokenResult, err := h.loginHandler.Execute(c.Request.Context(), cmd)
 	if err != nil {
 		status, msg := authHttp.MapDomainErrorToHTTP(err)
 		coreHttp.Error(c, status, msg)
@@ -61,6 +61,10 @@ func (h *HTTPHandler) Login(c *gin.Context) {
 			Role:  result.User.Role().String(),
 		},
 	}
+
+	// Set refresh token in HttpOnly cookie
+	maxAge := int(refreshTokenResult.ExpiresIn.Seconds())
+	c.SetCookie("refresh_token", refreshTokenResult.Token, maxAge, "/", "", false, true)
 
 	coreHttp.OK(c, resp)
 }

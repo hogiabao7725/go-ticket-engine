@@ -30,10 +30,13 @@ func (g *JWTTokenGenerator) GenerateAccessToken(userID, role string) (domain.Tok
 	}, nil
 }
 
-func (g *JWTTokenGenerator) GenerateRefreshToken(userID string) (string, error) {
+func (g *JWTTokenGenerator) GenerateRefreshToken(userID string) (domain.TokenResult, error) {
 	token, err := g.jwt.GenerateRefreshToken(userID)
 	if err != nil {
-		return "", fmt.Errorf("auth.infra.token_generator.GenerateRefreshToken: %w", err)
+		return domain.TokenResult{}, fmt.Errorf("auth.infra.token_generator.GenerateRefreshToken: %w", err)
 	}
-	return token, nil
+	return domain.TokenResult{
+		Token:     token,
+		ExpiresIn: g.jwt.RefreshTTL(),
+	}, nil
 }
